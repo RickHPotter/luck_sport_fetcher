@@ -26,12 +26,8 @@ func SetUpDatabase() *sql.DB {
 
 	database.Exec("PRAGMA journal_mode=WAL;")
 
-	if _, err = database.Exec(createTableOddsSQL); err != nil {
-		panic("Erro ao criar o banco de dados do Odds. Processo finalizado.")
-	}
-
-	if _, err = database.Exec(createTableFutureOddsSQL); err != nil {
-		panic("Erro ao criar o banco de dados do Odds Futuras. Processo finalizado.")
+	if _, err = database.Exec(schemaSQL); err != nil {
+		panic("Erro ao criar o banco de dados do Odds. Processo finalizado:" + err.Error())
 	}
 
 	return database
@@ -82,14 +78,6 @@ func FetchMatchDateCounts(db *sql.DB, startDate string, endDate string) {
 func SaveToDatabase(database *sql.DB, date string, records []Record) (string, error) {
 	resultMessage := ""
 
-	if _, err := database.Exec(createTableOddsSQL); err != nil {
-		panic("Erro ao criar o banco de dados do Odds. Processo finalizado.")
-	}
-
-	if _, err := database.Exec(createTableFutureOddsSQL); err != nil {
-		panic("Erro ao criar o banco de dados do Odds Futuras. Processo finalizado.")
-	}
-
 	tx, err := database.Begin()
 	if err != nil {
 		TheOnesThatGotAwayDB = append(TheOnesThatGotAwayDB, date)
@@ -100,28 +88,10 @@ func SaveToDatabase(database *sql.DB, date string, records []Record) (string, er
 		if len(records) == count {
 			resultMessage += style.Colour("Dados já haviam sido salvos no Banco de Dados!", style.Blue, style.Bold)
 			return resultMessage, nil
+		} else if count > 0 {
+			database.Exec("DELETE FROM odds WHERE MatchDate = ?", date)
 		}
 	}
-
-	// stmtSelect, err := tx.Prepare("SELECT COUNT(*) FROM odds WHERE MatchDate = ?")
-	// if err != nil {
-	// 	TheOnesThatGotAwayDB = append(TheOnesThatGotAwayDB, date)
-	// 	return "", fmt.Errorf(resultMessage+style.Colour("erro ao usar o banco de dados, erro: %v", style.Red, style.Bold), err)
-	// }
-	//
-	// defer stmtSelect.Close()
-	//
-	// var count int
-	// err = stmtSelect.QueryRow(records[0].MatchDate).Scan(&count)
-	// if err != nil {
-	// 	TheOnesThatGotAwayDB = append(TheOnesThatGotAwayDB, date)
-	// 	return "", fmt.Errorf(resultMessage+style.Colour("erro ao usar o banco de dados, erro: %v", style.Red, style.Bold), err)
-	// }
-	//
-	// if len(records) == count {
-	// 	resultMessage += style.Colour("Dados já haviam sido salvos no Banco de Dados!", style.Blue, style.Bold)
-	// 	return resultMessage, nil
-	// }
 
 	stmt, err := tx.Prepare(insertSQL)
 	if err != nil {
@@ -132,7 +102,7 @@ func SaveToDatabase(database *sql.DB, date string, records []Record) (string, er
 	defer stmt.Close()
 
 	for _, record := range records {
-		_, err = stmt.Exec(record.MatchDate, record.League, record.HomeTeam, record.AwayTeam, record.EarlyOdds1, record.EarlyOddsX, record.EarlyOdds2,
+		_, err = stmt.Exec(record.MatchDate, record.League, record.LeagueName, record.HomeTeam, record.AwayTeam, record.EarlyOdds1, record.EarlyOddsX, record.EarlyOdds2,
 			record.FinalOdds1, record.FinalOddsX, record.FinalOdds2, record.Score)
 		if err != nil {
 			TheOnesThatGotAwayDB = append(TheOnesThatGotAwayDB, date)

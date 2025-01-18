@@ -3,6 +3,8 @@ package models
 type Record struct {
 	MatchDate  string `json:"matchDate"`
 	League     string `json:"league"`
+	LeagueID   string `json:"leagueId"`
+	LeagueName string `json:"leagueName"`
 	HomeTeam   string `json:"homeTeam"`
 	AwayTeam   string `json:"awayTeam"`
 	EarlyOdds1 string `json:"earlyOdds1"`

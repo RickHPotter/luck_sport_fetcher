@@ -196,7 +196,7 @@ func main() {
 	fmt.Printf(style.Colour("Processo finalizado em %02d:%02d:%02d (hh:mm:ss)\n", style.Green, style.Bold), hours, minutes, seconds)
 
 	fmt.Println()
-	fmt.Println(style.Colour("Pressione ENTER para fechar ou espere 30 segundos.", style.Italic, style.Bold))
+	fmt.Println(style.Colour("Pressione ENTER para fechar ou espere 60 segundos.", style.Italic, style.Bold))
 
 	// Create a channel to wait for user input
 	inputChan := make(chan struct{})
@@ -211,7 +211,7 @@ func main() {
 	select {
 	case <-inputChan:
 		fmt.Println("Fechando agora...")
-	case <-time.After(30 * time.Second):
+	case <-time.After(60 * time.Second):
 		fmt.Println("Tempo esgotado. Fechando...")
 	}
 }

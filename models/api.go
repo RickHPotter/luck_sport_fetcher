@@ -67,7 +67,8 @@ func FetchData(date string) ([]Record, string, error) {
 		score := fields[8] + "-" + fields[9] + "\n" + "(" + fields[10] + ")"
 		record := Record{
 			MatchDate:  date.Format("02/01/2006"),
-			League:     fields[3],
+			League:     strings.Split(fields[3], ",")[0],
+			LeagueName: strings.Split(fields[3], ",")[1],
 			HomeTeam:   fields[6],
 			AwayTeam:   fields[7],
 			EarlyOdds1: fields[11],
