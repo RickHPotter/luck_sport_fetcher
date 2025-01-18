@@ -2,6 +2,7 @@ package style
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
@@ -25,11 +26,17 @@ const (
 	Invert    = "\033[7m"
 )
 
-func Colour(input interface{}, colour ...string) string {
-	if !config.ProvideColours {
-		colour = []string{}
+func CheckColourSupport() {
+	_, err := fmt.Fprint(os.Stdout, "\x1b[31m")
+	if err != nil {
+		config.ProvideColours = false
 	}
 
+	config.ProvideColours = !strings.Contains(fmt.Sprintf("%v", os.Stdout), "stderr")
+	fmt.Fprint(os.Stdout, Reset)
+}
+
+func Colour(input interface{}, colour ...string) string {
 	var s string
 	c := ""
 	for i := range colour {
@@ -43,7 +50,11 @@ func Colour(input interface{}, colour ...string) string {
 	case []string:
 		s = c + strings.Join(v, ", ") + Reset
 	case string:
-		s = c + v + Reset
+		if config.ProvideColours {
+			s = c + v + Reset
+		} else {
+			s = v
+		}
 	default:
 		fmt.Printf("Unsupported type provided to Colour func - %T\n", v)
 	}

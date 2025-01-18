@@ -10,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"example.com/m/config"
 	"example.com/m/models"
 	"example.com/m/style"
 	_ "modernc.org/sqlite"
@@ -42,17 +41,27 @@ func worker(dates <-chan string, database *sql.DB, wg *sync.WaitGroup) {
 }
 
 func main() {
-	if len(os.Args) < 2 {
-		log.Fatalf("Argumentos de datas não fornecidos. Formato: yyyy-mm-dd\n")
-	}
+	startDateStr := ""
+	endDateStr := ""
 
-	startDateStr := os.Args[1]
-	endDateStr := startDateStr
-	if len(os.Args) >= 3 {
-		endDateStr = os.Args[2]
-	}
-	if len(os.Args) >= 4 {
-		config.ProvideColours = true
+	switch len(os.Args) {
+	case 1:
+		{
+			fmt.Println("Argumentos de datas não fornecidos. Formato: yyyy-mm-dd")
+			return
+		}
+	case 2:
+		{
+			database := models.SetUpDatabase()
+			models.RunQuery(database, os.Args[1])
+			models.CloseDatabase(database)
+			return
+		}
+	case 3:
+		{
+			startDateStr = os.Args[1]
+			endDateStr = os.Args[2]
+		}
 	}
 
 	startDate, err := time.Parse("2006-01-02", startDateStr)
@@ -67,6 +76,8 @@ func main() {
 			log.Fatalf("Data Invalida: %v\n", err)
 		}
 	}
+
+	style.CheckColourSupport()
 
 	start := time.Now()
 

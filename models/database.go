@@ -41,6 +41,13 @@ func CloseDatabase(database *sql.DB) {
 	database.Close()
 }
 
+func RunQuery(db *sql.DB, query string) {
+	_, err := db.Exec(query)
+	if err != nil {
+		panic("Erro ao executar a query. Processo finalizado.")
+	}
+}
+
 func FetchMatchDateCounts(db *sql.DB, startDate string, endDate string) {
 	startDate = strings.ReplaceAll(startDate, "-", "")
 	endDate = strings.ReplaceAll(endDate, "-", "")
