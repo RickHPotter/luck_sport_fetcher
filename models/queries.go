@@ -5,6 +5,35 @@ const insertSQL = `
 	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
 
 const schemaSQL = `
+  CREATE TABLE IF NOT EXISTS Filter (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name TEXT NOT NULL UNIQUE,
+    LeaguesChosen TEXT,
+    YearsChosen TEXT,
+    SameHomeAwayE INTEGER DEFAULT 0,
+    SameHomeAwayF INTEGER DEFAULT 0,
+    SameDrawE INTEGER DEFAULT 0,
+    SameDrawF INTEGER DEFAULT 0,
+    Early INTEGER DEFAULT 0,
+    Final INTEGER DEFAULT 0,
+    SameLeagueOnly INTEGER DEFAULT 0,
+    OnlyTodayAndTomorrowMatches INTEGER DEFAULT 0,
+    OnlyPresentEarlyOdds INTEGER DEFAULT 0,
+    OnlyPresentFinalOdds INTEGER DEFAULT 0,
+    HomeWinE1 TEXT,
+    HomeWinE2 TEXT,
+    HomeWinF1 TEXT,
+    HomeWinF2 TEXT,
+    DrawE1 TEXT,
+    DrawE2 TEXT,
+    DrawF1 TEXT,
+    DrawF2 TEXT,
+    AwayWinE1 TEXT,
+    AwayWinE2 TEXT,
+    AwayWinF1 TEXT,
+    AwayWinF2 TEXT
+  );
+
   CREATE TABLE IF NOT EXISTS League (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL UNIQUE
